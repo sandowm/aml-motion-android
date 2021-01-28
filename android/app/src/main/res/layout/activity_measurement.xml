@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".measurement">
+
+    <TextView
+        android:id="@+id/x_txt_g"
+        android:layout_width="175dp"
+        android:layout_height="34dp"
+        android:text="X"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.41"
+        tools:layout_editor_absoluteX="68dp" />
+
+    <TextView
+        android:id="@+id/z_txt_g"
+        android:layout_width="175dp"
+        android:layout_height="34dp"
+        android:text="Z"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.575"
+        tools:layout_editor_absoluteX="68dp" />
+
+    <TextView
+        android:id="@+id/txtTitleGyro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Gyroscope"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.331" />
+
+    <TextView
+        android:id="@+id/y_txt_g"
+        android:layout_width="175dp"
+        android:layout_height="34dp"
+        android:text="Y"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.493"
+        tools:layout_editor_absoluteX="68dp" />
+
+    <TextView
+        android:id="@+id/x_txt"
+        android:layout_width="175dp"
+        android:layout_height="34dp"
+        android:text="X"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.094"
+        tools:layout_editor_absoluteX="68dp" />
+
+    <TextView
+        android:id="@+id/len_txt"
+        android:layout_width="175dp"
+        android:layout_height="34dp"
+        android:text="X"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.977"
+        tools:layout_editor_absoluteX="116dp" />
+
+    <TextView
+        android:id="@+id/y_txt"
+        android:layout_width="175dp"
+        android:layout_height="34dp"
+        android:text="Y"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.175"
+        tools:layout_editor_absoluteX="68dp" />
+
+    <TextView
+        android:id="@+id/txtTitleAcc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Accelerometer"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.024" />
+
+    <TextView
+        android:id="@+id/z_txt"
+        android:layout_width="175dp"
+        android:layout_height="34dp"
+        android:text="Z"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.258"
+        tools:layout_editor_absoluteX="68dp" />
+
+    <Button
+        android:id="@+id/btnStartRecord"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start Recording"
+        app:layout_constraintBottom_toTopOf="@+id/btnStopRecord"
+        app:layout_constraintStart_toStartOf="@+id/btnStopRecord"
+        app:layout_constraintTop_toBottomOf="@+id/z_txt_g"
+        app:layout_constraintVertical_bias="0.729" />
+
+    <Button
+        android:id="@+id/btnStopRecord"
+        android:layout_width="172dp"
+        android:layout_height="46dp"
+        android:layout_marginBottom="136dp"
+        android:text="Stop Recording"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btnSaveData"
+        android:layout_width="172dp"
+        android:layout_height="46dp"
+        android:layout_marginBottom="68dp"
+        android:text="Save and Send"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/btnStopRecord"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/btnStopRecord"
+        app:layout_constraintTop_toBottomOf="@+id/btnStopRecord"
+        app:layout_constraintVertical_bias="1.0" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

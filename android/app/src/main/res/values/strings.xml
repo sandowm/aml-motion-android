@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Accelerometry_3</string>
+    <string name="sendStatus_sending">Sending ...
+        to %1s.</string>
+    <string name="sendStatus_result">Sent.
+        Server Result: %1s.</string>
+</resources>
