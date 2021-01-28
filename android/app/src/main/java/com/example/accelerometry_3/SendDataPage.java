@@ -5,35 +5,54 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import static com.example.accelerometry_3.measurement.sendeableArray;
 
 public class SendDataPage extends AppCompatActivity {
-    TextView txtSuccess;
-    private final ExternalData externalData;
-    ExecutorService executorService = Executors.newFixedThreadPool(4);
-
-    public SendDataPage(){
-        externalData = new ExternalData(executorService);
-    }
     private TextView status_txt;
+    private JSONObject postData = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_data_page);
         status_txt = (TextView)findViewById(R.id.status);
-        status_txt.setText(getString(R.string.sendStatus_sending,"unknown"));
-        externalData.sendData(measurement.getSendeableArray(), new RepositoryCallback<HttpResult>() {
+        JSONObject postData = new JSONObject();
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url ="https://unibe.sandow.cc/my-university.php";
+        status_txt.setText(getString(R.string.sendStatus_sending,url));
+        try {
+            Gson gson = new Gson();
+            //JSONObject postData = gson.fromJson("{ \"data\":" + gson.toJson(sendeableArray[0]) + '}', JSONObject.class);
+            postData.put("data", new JSONArray(gson.toJson(sendeableArray[0])));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, postData, new Response.Listener<JSONObject>() {
             @Override
-            public void onComplete(Result<HttpResult> result) {
-                if (result instanceof Result.Success) {
-                    status_txt.setText(getString(R.string.sendStatus_sending,((Result.Success<HttpResult>) result).data));
-                } else {
-                    status_txt.setText(getString(R.string.sendStatus_sending,"Error"));
-                }
+            public void onResponse(JSONObject response) {
+                status_txt.setText(getString(R.string.sendStatus_result, response.toString()));
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
             }
         });
+
+        queue.add(jsonObjectRequest);
     }
 
 
