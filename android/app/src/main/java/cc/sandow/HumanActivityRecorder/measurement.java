@@ -1,4 +1,4 @@
-package com.example.accelerometry_3;
+package cc.sandow.HumanActivityRecorder;
 
 import android.content.Intent;
 import android.hardware.Sensor;

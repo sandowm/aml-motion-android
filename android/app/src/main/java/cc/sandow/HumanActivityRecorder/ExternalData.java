@@ -1,4 +1,4 @@
-package com.example.accelerometry_3;
+package cc.sandow.HumanActivityRecorder;
 
 
 import com.google.gson.Gson;

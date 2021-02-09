@@ -1,4 +1,4 @@
-package com.example.accelerometry_3;
+package cc.sandow.HumanActivityRecorder;
 
 import android.os.Bundle;
 import android.widget.TextView;
@@ -17,7 +17,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.example.accelerometry_3.measurement.sendeableArray;
+import static cc.sandow.HumanActivityRecorder.measurement.sendeableArray;
 
 public class SendDataPage extends AppCompatActivity {
     private TextView status_txt;
@@ -34,7 +34,6 @@ public class SendDataPage extends AppCompatActivity {
         status_txt.setText(getString(R.string.sendStatus_sending,url));
         try {
             Gson gson = new Gson();
-            //JSONObject postData = gson.fromJson("{ \"data\":" + gson.toJson(sendeableArray[0]) + '}', JSONObject.class);
             postData.put("data", new JSONArray(gson.toJson(sendeableArray[0])));
         } catch (JSONException e) {
             e.printStackTrace();

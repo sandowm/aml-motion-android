@@ -1,4 +1,4 @@
-package com.example.accelerometry_3;
+package cc.sandow.HumanActivityRecorder;
 
 import android.content.Context;
 import android.hardware.Sensor;
@@ -6,13 +6,14 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
-public class Gyroscope {
+public class Accelerometer {
+
     public interface Listener
     {
-        void onRotation(float rx, float ry, float rz);
+        void onTranslation(float tx, float ty, float tz);
     }
 
-    private Gyroscope.Listener listener;
+    private Listener listener;
 
     public void setListener (Listener l)
     {
@@ -23,15 +24,15 @@ public class Gyroscope {
     private Sensor sensor;
     private SensorEventListener sensorEventListener;
 
-    Gyroscope(Context context){
+    Accelerometer(Context context){
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         sensorEventListener = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
                 if(listener != null)
                 {
-                    listener.onRotation(sensorEvent.values[0], sensorEvent.values[1], sensorEvent.values[2]);
+                    listener.onTranslation(sensorEvent.values[0], sensorEvent.values[1], sensorEvent.values[2]);
                 }
 
             }
@@ -53,4 +54,5 @@ public class Gyroscope {
     {
         sensorManager.unregisterListener(sensorEventListener);
     }
+
 }
