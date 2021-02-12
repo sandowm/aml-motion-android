@@ -6,7 +6,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,7 +19,7 @@ public class measurement extends AppCompatActivity implements SensorEventListene
     TextView x_txt, y_txt, z_txt, txtTitleAcc;
     TextView x_txt_g, y_txt_g, z_txt_g, txtTitleGyro, len_txt;
 
-    Button btnStartRecording, btnStopRecording, btnSaveData;
+    ImageButton btnStartRecording, btnStopRecording, btnSaveData, btnSettings;
 
     private Sensor Accelerometer;
     private Sensor Gyroscope;
@@ -94,9 +94,9 @@ public class measurement extends AppCompatActivity implements SensorEventListene
         z_txt_g = (TextView)findViewById(R.id.z_txt_g);
 
         //Define the buttons
-        btnStartRecording = (Button) findViewById(R.id.btnStartRecord);
-        btnStopRecording  = (Button) findViewById(R.id.btnStopRecord);
-        btnSaveData = (Button) findViewById(R.id.btnSaveData);
+        btnStartRecording =  findViewById(R.id.btnStart);
+        btnStopRecording  = findViewById(R.id.btnPause);
+        btnSaveData = findViewById(R.id.btnSave);
 
         //Define what happens when the buttons are clicked
         btnStartRecording.setOnClickListener(new View.OnClickListener() {
@@ -117,6 +117,14 @@ public class measurement extends AppCompatActivity implements SensorEventListene
             @Override
             public void onClick(View v) {
                 goToSendPage(); //function see below
+            }
+        });
+        btnSettings = (ImageButton)findViewById(R.id.btnSettings2);
+        btnSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent =  new Intent(measurement.this, SettingsActivity.class);
+                startActivity(intent);
             }
         });
 
