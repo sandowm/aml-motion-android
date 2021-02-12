@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -23,10 +22,7 @@ public class measurement extends AppCompatActivity implements SensorEventListene
     Button btnStartRecording, btnStopRecording, btnSaveData;
 
     private Sensor Accelerometer;
-    private SensorManager SM_acc;
-
     private Sensor Gyroscope;
-    private SensorManager SM_gyro;
 
     private Accelerometer accelerometer;
     private Gyroscope gyroscope;
@@ -69,7 +65,6 @@ public class measurement extends AppCompatActivity implements SensorEventListene
                 len_txt.setText("Array "+dataLine);
                 // TODO overrun handling needs to be better
                 if (dataLine >MAXLINES) dataLine = 0;
-
             }
         });
 
@@ -86,30 +81,12 @@ public class measurement extends AppCompatActivity implements SensorEventListene
             }
         });
 
-
-        // SensorManager accelerometer
-        // SM_acc = (SensorManager)getSystemService(SENSOR_SERVICE);
-
-        // Accelerometer Sensor
-        // Accelerometer = SM_acc.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-
-        // Register Sensor Listener Accelerometer
-        //SM_acc.registerListener(this, Accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-
         //Assign TextViews Accelerometer
         x_txt = (TextView)findViewById(R.id.x_txt);
         y_txt = (TextView)findViewById(R.id.y_txt);
         z_txt = (TextView)findViewById(R.id.z_txt);
 
         len_txt = (TextView)findViewById(R.id.len_txt);
-        // SensorManager Gyro
-        //SM_gyro = (SensorManager)getSystemService(SENSOR_SERVICE);
-
-        // Gyroscope Sensor
-        //Gyroscope = SM_gyro.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
-
-        // Register Sensor Listener Gyroscope
-        //SM_gyro.registerListener(this, Gyroscope, SensorManager.SENSOR_DELAY_NORMAL);
 
         //Assign TextViews Gyro
         x_txt_g = (TextView)findViewById(R.id.x_txt_g);
@@ -153,10 +130,11 @@ public class measurement extends AppCompatActivity implements SensorEventListene
 
     //functions to start and stop data writing and to send the data to the server
     private void onStartClick() {
-        SM_acc.registerListener(this, Accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        onResume();
     }
 
-    private void onStopClick() { SM_acc.unregisterListener(this);
+    private void onStopClick() {
+        onPause();
     }
 
     //functions for Data writing
@@ -178,7 +156,6 @@ public class measurement extends AppCompatActivity implements SensorEventListene
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-
         float x = event.values[0];
         float y = event.values[1];
         float z = event.values[2];

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="organizations" >
+        <item name="Unibe" url="https://unibe.sandow.cc/my-university.php" />
+    </array>
+
+</resources>
