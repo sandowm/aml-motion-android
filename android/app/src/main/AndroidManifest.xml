@@ -18,6 +18,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.HumanActivityRecorder">
+        <service android:name=".SensorService" />
         <activity android:name=".SendDataPage"></activity>
         <activity android:name=".measurement" />
         <activity android:name=".SettingsActivity" />

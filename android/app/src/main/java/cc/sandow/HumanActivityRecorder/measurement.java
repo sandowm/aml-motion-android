@@ -65,6 +65,9 @@ public class measurement extends AppCompatActivity implements SensorEventListene
                 len_txt.setText("Array "+dataLine);
                 // TODO overrun handling needs to be better
                 if (dataLine >MAXLINES) dataLine = 0;
+                // TODO Just for testing barometer
+                if (sendeableArray.length >= 7) {
+                z_txt_g.setText("Zp: " + sendeableArray[7][4]);}
             }
         });
 
@@ -74,7 +77,7 @@ public class measurement extends AppCompatActivity implements SensorEventListene
             public void onRotation(float rx, float ry, float rz) {
                 x_txt_g.setText("X: " + rx);
                 y_txt_g.setText("Y: " + ry);
-                z_txt_g.setText("Z: " + rz);
+                //z_txt_g.setText("Z: " + rz);
                 sendeableArray[dataLine][3]=rx;
                 sendeableArray[dataLine][4]=ry;
                 sendeableArray[dataLine][5]=rz;
@@ -152,11 +155,15 @@ public class measurement extends AppCompatActivity implements SensorEventListene
 
         accelerometer.register();
         gyroscope.register();
+        Intent intent = new Intent(getApplicationContext(), SensorService.class );
+        startService(intent);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        Intent intent = new Intent(getApplicationContext(), SensorService.class );
+        stopService(intent);
 
         accelerometer.unregister();
         gyroscope.unregister();
@@ -169,7 +176,6 @@ public class measurement extends AppCompatActivity implements SensorEventListene
         float z = event.values[2];
     }
 
-    // this one I dont use
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
         // Not in use
