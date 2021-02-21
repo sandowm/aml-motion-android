@@ -81,6 +81,8 @@ public class HomeActivity extends AppCompatActivity {
     }
     // Activate Collector-Service
     private void moveToMeasurement() {
+        // Clear Status Text
+        txtServiceMessage.setText("Started Activity");
         Intent intent = new Intent(getApplicationContext(), SensorService.class );
         startService(intent);
     }

@@ -2,11 +2,13 @@ package cc.sandow.HumanActivityRecorder;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.android.volley.Request;
@@ -22,6 +24,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Arrays;
+
 public class SensorService  extends Service implements SensorEventListener {
     private static final String DEBUG_TAG = "AccLoggerService";
 
@@ -31,6 +35,7 @@ public class SensorService  extends Service implements SensorEventListener {
     private static int MAXLINES=40000;
     private float[][] accgyrData;
     private JSONObject postData;
+    SharedPreferences sharedPreferences;
 
     public SensorService() {
         // 40000 lines, with 6 measurements each
@@ -48,6 +53,7 @@ public class SensorService  extends Service implements SensorEventListener {
         sensorManager.registerListener(this, sensorGyr,
                 SensorManager.SENSOR_DELAY_NORMAL);
         Log.d(DEBUG_TAG,"SensorService StartCommand received");
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         return START_STICKY;
     }
 
@@ -83,29 +89,34 @@ public class SensorService  extends Service implements SensorEventListener {
         for (float value : accgyrData[dataLine])
             sb.append(String.valueOf(value)).append(" | ");
         Log.i(DEBUG_TAG,"SensorService Sensor changed: " + sb.toString());
-        // grab the values and timestamp
-        //...
-        // stop the sensor and service
         if (dataLine >= 100) {
             sendData();
             sensorManager.unregisterListener(this);
-
         }
     }
 
-    public void sendData() {
+    public JSONObject prepareData() {
         JSONObject postData = new JSONObject();
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String url ="https://unibe.sandow.cc/my-university.php";
-        EventBus.getDefault().post(new ServiceEvent(getString(R.string.sendStatus_sending,url)));
         try {
             Gson gson = new Gson();
-            postData.put("data", new JSONArray(gson.toJson(accgyrData[0])));
+            postData.put("data", new JSONArray(gson.toJson(Arrays.copyOfRange(accgyrData, 0, 99))));
+            postData.put("subjectID", sharedPreferences.getString("subject_id", ""));
+            postData.put("subjectName", sharedPreferences.getString("subject_name", ""));
+            postData.put("subjectEMail", sharedPreferences.getString("subject_email", ""));
+            postData.put("sessionID", sharedPreferences.getString("session_id", ""));
+            postData.put("activityID", sharedPreferences.getString("activity_id", ""));
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        return postData;
+    }
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, postData, new Response.Listener<JSONObject>() {
+    public void sendData() {
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url ="https://unibe.sandow.cc/my-university.php";
+        EventBus.getDefault().post(new ServiceEvent(getString(R.string.sendStatus_sending,url)));
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, prepareData(), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 EventBus.getDefault().post(new ServiceEvent(getString(R.string.sendStatus_result, response.toString())));
