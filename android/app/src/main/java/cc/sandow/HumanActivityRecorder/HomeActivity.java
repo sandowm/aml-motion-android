@@ -10,10 +10,14 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 public class HomeActivity extends AppCompatActivity {
     String name, email, SubjectNumber;
 
-    TextView txtName, txtMail, txtSubject,txtSessionID,txtActivityID;
+    TextView txtName, txtMail, txtSubject,txtSessionID,txtActivityID, txtServiceMessage;
 
     ImageButton btnToAccGyr;
     ImageButton btnSettings;
@@ -26,6 +30,7 @@ public class HomeActivity extends AppCompatActivity {
         txtSubject = (TextView) findViewById(R.id.txtSubject);
         txtSessionID = (TextView) findViewById(R.id.txtSessionID);
         txtActivityID = (TextView) findViewById(R.id.txtActivityID);
+        txtServiceMessage = (TextView) findViewById(R.id.txtServiceMessage);
 
         SharedPreferences sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(this);
@@ -58,12 +63,28 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
-    //function to move to the next page
-    private void moveToMeasurement(){
-        Intent intent =  new Intent(HomeActivity.this, measurement.class);
-        startActivity(intent);
+    @Override
+    protected void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
     }
-    private void moveToSettings(){
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(ServiceEvent event) {
+        // Put the server response on the UI
+        txtServiceMessage.setText(event.message);
+    }
+    // Activate Collector-Service
+    private void moveToMeasurement() {
+        Intent intent = new Intent(getApplicationContext(), SensorService.class );
+        startService(intent);
+    }
+    private void moveToSettings() {
         Intent intent =  new Intent(HomeActivity.this, SettingsActivity.class);
         startActivity(intent);
     }
