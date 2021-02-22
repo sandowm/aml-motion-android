@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.accelerometry_3">
+    package="cc.sandow.HumanActivityRecorder"
+    android:versionCode="2"
+    android:versionName="0.002"
+    >
 
     <uses-permission android:name="android.permission.INTERNET"/>
 
@@ -12,14 +15,17 @@
         android:required="true" />
 
     <application
+        android:name=".HARApplication"
+
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Accelerometry_3">
-        <activity android:name=".SendDataPage"></activity>
-        <activity android:name=".measurement" />
+        android:theme="@style/Theme.HumanActivityRecorder">
+        <service android:name=".SensorService" />
+        <activity android:name=".SettingsActivity" />
+
         <activity android:name=".HomeActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>

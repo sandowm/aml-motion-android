@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+        <SwitchPreferenceCompat
+            app:key="notifications"
+            app:title="Enable message notifications"/>
+        <PreferenceCategory android:title="Subject">
+
+        <EditTextPreference
+            app:key="subject_name"
+            android:defaultValue="Default value"
+            android:key="subject_name"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Name" />
+        <EditTextPreference
+            android:defaultValue="Default value"
+            android:key="subject_id"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="ID" />
+        <EditTextPreference
+            android:defaultValue="Default value"
+            android:key="subject_email"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Email" />
+        </PreferenceCategory>
+
+        <PreferenceCategory android:title="Activity">
+        <EditTextPreference
+            android:defaultValue="0"
+            android:key="session_id"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Session ID" />
+        <EditTextPreference
+            android:defaultValue="0"
+            android:key="activity_id"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Activity ID" />
+        </PreferenceCategory>
+        <PreferenceCategory android:title="Advanced">
+        <EditTextPreference
+            android:defaultValue="https://unibe.sandow.cc/my-university.php"
+            android:key="url"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="URL" />
+        <EditTextPreference
+            android:key="authCode"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Authentication Code" />
+        </PreferenceCategory>
+
+</PreferenceScreen>
