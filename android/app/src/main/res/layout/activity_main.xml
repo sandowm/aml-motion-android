@@ -20,4 +20,18 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.499" />
 
+    <TextView
+        android:id="@+id/txtVersion"
+        android:layout_width="311dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:text="Version"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/Disclaimer"
+        app:layout_constraintTop_toBottomOf="@+id/Disclaimer" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -63,6 +63,10 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
+    private static int countLines(String str){
+        String[] lines = str.split("\r\n|\r|\n");
+        return  lines.length;
+    }
     @Override
     protected void onStart() {
         super.onStart();
@@ -77,12 +81,17 @@ public class HomeActivity extends AppCompatActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(ServiceEvent event) {
         // Put the server response on the UI
-        txtServiceMessage.setText(event.message);
+        if (countLines(txtServiceMessage.getText().toString()) >= 7) {
+            txtServiceMessage.setText(event.message);
+        } else {
+            txtServiceMessage.append(event.message);
+        }
+        txtServiceMessage.append("\n");
     }
     // Activate Collector-Service
     private void moveToMeasurement() {
         // Clear Status Text
-        txtServiceMessage.setText("Started Activity");
+        txtServiceMessage.setText("Recording Started\n");
         Intent intent = new Intent(getApplicationContext(), SensorService.class );
         startService(intent);
     }

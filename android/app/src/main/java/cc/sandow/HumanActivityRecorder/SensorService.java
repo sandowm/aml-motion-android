@@ -31,16 +31,18 @@ public class SensorService  extends Service implements SensorEventListener {
 
     private SensorManager sensorManager = null;
     private Sensor sensorAcc, sensorGyr = null;
-    public int dataLine = 0;
+    public int accLine, gyrLine = 0;
     private static int MAXLINES=40000;
-    private float[][] accgyrData;
+    private float[][] accData, gyrData;
     private JSONObject postData;
     SharedPreferences sharedPreferences;
 
+    Integer versionCode = BuildConfig.VERSION_CODE;
+
     public SensorService() {
         // 40000 lines, with 6 measurements each
-        accgyrData = new float[MAXLINES][6];
-        dataLine = 0;
+        accData = new float[MAXLINES][4];
+        gyrData = new float[MAXLINES][4];
     }
 
     @Override
@@ -70,6 +72,8 @@ public class SensorService  extends Service implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            // Every 0-Element is a timestamp in ms since start of this
+            accData[accLine][0] = (float) event.timestamp / 1000000;
             // grab the values
             StringBuilder sb = new StringBuilder();
             for (float value : event.values)
@@ -77,19 +81,21 @@ public class SensorService  extends Service implements SensorEventListener {
 
             Log.d(DEBUG_TAG, "received sensor valures are: " + sb.toString());
             for (int i = 0; i < event.values.length; i++) {
-                accgyrData[dataLine][i] = event.values[i];
+                accData[accLine][1+i] = event.values[i];
             }
-            dataLine++;
+            accLine++;
+            if (accLine % 50 == 0) EventBus.getDefault().post(new ServiceEvent(String.format("Got %d Acc Events",accLine)));
         } else {
             for (int i = 0; i < event.values.length; i++) {
-                accgyrData[dataLine][2+i] = event.values[i];
+                gyrData[gyrLine][1+i] = event.values[i];
             }
         }
         StringBuilder sb = new StringBuilder();
-        for (float value : accgyrData[dataLine])
+        for (float value : gyrData[gyrLine])
             sb.append(String.valueOf(value)).append(" | ");
         Log.i(DEBUG_TAG,"SensorService Sensor changed: " + sb.toString());
-        if (dataLine >= 100) {
+        // Give User Feedback
+        if (gyrLine >= 100 || accLine >= 400) {
             sendData();
             sensorManager.unregisterListener(this);
         }
@@ -99,7 +105,9 @@ public class SensorService  extends Service implements SensorEventListener {
         JSONObject postData = new JSONObject();
         try {
             Gson gson = new Gson();
-            postData.put("data", new JSONArray(gson.toJson(Arrays.copyOfRange(accgyrData, 0, 99))));
+            if (accLine >0) postData.put("acc", new JSONArray(gson.toJson(Arrays.copyOfRange(accData, 0, accLine - 1))));
+            if (gyrLine >0) postData.put("gyr", new JSONArray(gson.toJson(Arrays.copyOfRange(gyrData, 0, gyrLine - 1))));
+            postData.put("appVersionCode", versionCode.toString());
             postData.put("subjectID", sharedPreferences.getString("subject_id", ""));
             postData.put("subjectName", sharedPreferences.getString("subject_name", ""));
             postData.put("subjectEMail", sharedPreferences.getString("subject_email", ""));
