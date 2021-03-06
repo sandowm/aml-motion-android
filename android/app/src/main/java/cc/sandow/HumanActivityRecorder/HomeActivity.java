@@ -21,6 +21,8 @@ public class HomeActivity extends AppCompatActivity {
 
     ImageButton btnToAccGyr;
     ImageButton btnSettings;
+    SharedPreferences sharedPreferences;
+
     @Override
     protected void onPostResume() {
         super.onPostResume();
@@ -32,8 +34,6 @@ public class HomeActivity extends AppCompatActivity {
         txtActivityID = (TextView) findViewById(R.id.txtActivityID);
         txtServiceMessage = (TextView) findViewById(R.id.txtServiceMessage);
 
-        SharedPreferences sharedPreferences =
-                PreferenceManager.getDefaultSharedPreferences(this);
         txtName.setText(sharedPreferences.getString("subject_name", ""));
         txtMail.setText(sharedPreferences.getString("subject_email", ""));
         txtSubject.setText(sharedPreferences.getString("subject_id", ""));
@@ -45,7 +45,8 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-
+        sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(this);
         //Define the Button to the next page and define what it does when clicked
         btnToAccGyr = (ImageButton)findViewById(R.id.btnPlay);
         btnToAccGyr.setOnClickListener(new View.OnClickListener() {
@@ -91,7 +92,7 @@ public class HomeActivity extends AppCompatActivity {
     // Activate Collector-Service
     private void moveToMeasurement() {
         // Clear Status Text
-        txtServiceMessage.setText("Recording Started\n");
+        txtServiceMessage.setText(String.format("Recording Scheduled for %ss\n",sharedPreferences.getString("activityDuration", "180")));
         ((HARApplication) this.getApplication()).setCollectorJobID(Util.scheduleJob(this));
     }
     private void moveToSettings() {

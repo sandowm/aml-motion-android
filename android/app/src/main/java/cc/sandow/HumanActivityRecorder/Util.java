@@ -27,9 +27,9 @@ public class Util {
     public static int scheduleJob(Context context) {
         ComponentName serviceComponent = new ComponentName(context, SensorJobService.class);
         JobInfo.Builder builder = new JobInfo.Builder(0, serviceComponent);
-        builder.setMinimumLatency(100); // wait before start
-        builder.setOverrideDeadline(3 * 1000); // maximum delay
-        builder.setRequiresCharging(false); // we don't care if the device is charging or not
+        builder.setMinimumLatency(2000); // wait 2s before start
+        builder.setOverrideDeadline(4 * 1000); // maximum delay 4s
+        builder.setRequiresCharging(false);
         JobScheduler jobScheduler = context.getSystemService(JobScheduler.class);
         return(jobScheduler.schedule(builder.build()));
     }

@@ -37,8 +37,8 @@ public class SensorService  extends Service implements SensorEventListener {
     private float[][] accData, gyrData;
     private JSONObject postData;
     SharedPreferences sharedPreferences;
-
     Integer versionCode = BuildConfig.VERSION_CODE;
+    Double maxSensorTimestamp = Double.MAX_VALUE;
 
     public SensorService() {
         // 40000 lines, with 6 measurements each
@@ -52,9 +52,9 @@ public class SensorService  extends Service implements SensorEventListener {
         sensorAcc = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sensorGyr = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         sensorManager.registerListener(this, sensorAcc,
-                SensorManager.SENSOR_DELAY_NORMAL);
+                SensorManager.SENSOR_DELAY_GAME);
         sensorManager.registerListener(this, sensorGyr,
-                SensorManager.SENSOR_DELAY_NORMAL);
+                SensorManager.SENSOR_DELAY_GAME);
         Log.d(LOG_TAG,"SensorService StartCommand received");
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         return START_STICKY;
@@ -72,21 +72,26 @@ public class SensorService  extends Service implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+        Double durationns = Float.parseFloat(sharedPreferences.getString("activityDuration","180")) * Math.pow(10,9);
+        if (maxSensorTimestamp == Double.MAX_VALUE) maxSensorTimestamp = event.timestamp + durationns;
+        Log.d(LOG_TAG,String.format("Event ts: %d, durationns: %f, max ts: %f",event.timestamp, durationns,maxSensorTimestamp));
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             // Every 0-Element is a timestamp in ms since start of this
-            accData[accLine][0] = (float) event.timestamp / 1000000;
+            accData[accLine][0] = (float) event.timestamp / 1000000;  // make it milliseconds
             // grab the values
             StringBuilder sb = new StringBuilder();
             for (float value : event.values)
                 sb.append(String.valueOf(value)).append(" | ");
 
-            Log.d(LOG_TAG, "received sensor valures are: " + sb.toString());
+            Log.d(LOG_TAG, "received sensor values are: " + sb.toString());
             for (int i = 0; i < event.values.length; i++) {
                 accData[accLine][1+i] = event.values[i];
             }
             accLine++;
             if (accLine % 50 == 0 ) sendToUI("M", String.format("Got %d Acc Events",accLine));
         } else {
+            // Every 0-Element is a timestamp in ms since start of this
+            accData[accLine][0] = (float) event.timestamp / 1000000;  // make it milliseconds
             for (int i = 0; i < event.values.length; i++) {
                 gyrData[gyrLine][1+i] = event.values[i];
             }
@@ -95,8 +100,10 @@ public class SensorService  extends Service implements SensorEventListener {
         for (float value : gyrData[gyrLine])
             sb.append(String.valueOf(value)).append(" | ");
         Log.i(LOG_TAG,"SensorService Sensor changed: " + sb.toString());
-        // Give User Feedback
-        if (gyrLine >= 100 || accLine >= 400) {
+
+        // This ends the service
+        if (maxSensorTimestamp < event.timestamp) {
+            Log.i(LOG_TAG,String.format("Ending SensorService at maxTimestamp: %f, event.timestamp: %d",maxSensorTimestamp,event.timestamp));
             sendData();
             sensorManager.unregisterListener(this);
         }
