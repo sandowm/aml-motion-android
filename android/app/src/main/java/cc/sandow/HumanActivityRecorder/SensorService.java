@@ -34,6 +34,7 @@ public class SensorService  extends Service implements SensorEventListener {
     private Sensor sensorAcc, sensorGyr = null;
     public int accLine, gyrLine = 0;
     private static int MAXLINES=40000;
+    private static int expectedDelay = 50000;  // 50ms Sensor Delay
     private float[][] accData, gyrData;
     private JSONObject postData;
     SharedPreferences sharedPreferences;
@@ -52,9 +53,9 @@ public class SensorService  extends Service implements SensorEventListener {
         sensorAcc = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sensorGyr = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         sensorManager.registerListener(this, sensorAcc,
-                SensorManager.SENSOR_DELAY_GAME);
+                expectedDelay);
         sensorManager.registerListener(this, sensorGyr,
-                SensorManager.SENSOR_DELAY_GAME);
+                expectedDelay);
         Log.d(LOG_TAG,"SensorService StartCommand received");
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         return START_STICKY;
