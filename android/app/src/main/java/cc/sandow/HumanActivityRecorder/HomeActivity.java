@@ -92,8 +92,7 @@ public class HomeActivity extends AppCompatActivity {
     private void moveToMeasurement() {
         // Clear Status Text
         txtServiceMessage.setText("Recording Started\n");
-        Intent intent = new Intent(getApplicationContext(), SensorService.class );
-        startService(intent);
+        ((HARApplication) this.getApplication()).setCollectorJobID(Util.scheduleJob(this));
     }
     private void moveToSettings() {
         Intent intent =  new Intent(HomeActivity.this, SettingsActivity.class);

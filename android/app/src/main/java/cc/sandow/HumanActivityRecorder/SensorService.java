@@ -19,15 +19,16 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 
-import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
 
+import static cc.sandow.HumanActivityRecorder.Util.sendToUI;
+
 public class SensorService  extends Service implements SensorEventListener {
-    private static final String DEBUG_TAG = "AccLoggerService";
+    private static final String LOG_TAG = "AccLoggerService";
 
     private SensorManager sensorManager = null;
     private Sensor sensorAcc, sensorGyr = null;
@@ -54,7 +55,7 @@ public class SensorService  extends Service implements SensorEventListener {
                 SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(this, sensorGyr,
                 SensorManager.SENSOR_DELAY_NORMAL);
-        Log.d(DEBUG_TAG,"SensorService StartCommand received");
+        Log.d(LOG_TAG,"SensorService StartCommand received");
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         return START_STICKY;
     }
@@ -79,12 +80,12 @@ public class SensorService  extends Service implements SensorEventListener {
             for (float value : event.values)
                 sb.append(String.valueOf(value)).append(" | ");
 
-            Log.d(DEBUG_TAG, "received sensor valures are: " + sb.toString());
+            Log.d(LOG_TAG, "received sensor valures are: " + sb.toString());
             for (int i = 0; i < event.values.length; i++) {
                 accData[accLine][1+i] = event.values[i];
             }
             accLine++;
-            if (accLine % 50 == 0) EventBus.getDefault().post(new ServiceEvent(String.format("Got %d Acc Events",accLine)));
+            if (accLine % 50 == 0 ) sendToUI("M", String.format("Got %d Acc Events",accLine));
         } else {
             for (int i = 0; i < event.values.length; i++) {
                 gyrData[gyrLine][1+i] = event.values[i];
@@ -93,13 +94,15 @@ public class SensorService  extends Service implements SensorEventListener {
         StringBuilder sb = new StringBuilder();
         for (float value : gyrData[gyrLine])
             sb.append(String.valueOf(value)).append(" | ");
-        Log.i(DEBUG_TAG,"SensorService Sensor changed: " + sb.toString());
+        Log.i(LOG_TAG,"SensorService Sensor changed: " + sb.toString());
         // Give User Feedback
         if (gyrLine >= 100 || accLine >= 400) {
             sendData();
             sensorManager.unregisterListener(this);
         }
     }
+
+
 
     public JSONObject prepareData() {
         JSONObject postData = new JSONObject();
@@ -120,14 +123,15 @@ public class SensorService  extends Service implements SensorEventListener {
     }
 
     public void sendData() {
+        Util.unschedule(this, ((HARApplication) this.getApplication()).getCollectorJobID());
         RequestQueue queue = Volley.newRequestQueue(this);
         String url ="https://unibe.sandow.cc/my-university.php";
-        EventBus.getDefault().post(new ServiceEvent(getString(R.string.sendStatus_sending,url)));
+        sendToUI("M", getString(R.string.sendStatus_sending,url));
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, prepareData(), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                EventBus.getDefault().post(new ServiceEvent(getString(R.string.sendStatus_result, response.toString())));
+                sendToUI("M", getString(R.string.sendStatus_result, response.toString()));
                 stopSelf();
             }
         }, new Response.ErrorListener() {
@@ -143,7 +147,7 @@ public class SensorService  extends Service implements SensorEventListener {
 
     @Override
     public void onDestroy() {
-        Log.i(DEBUG_TAG,"Beeing Shutdown");
+        Log.i(LOG_TAG,"Beeing Shutdown");
         sensorManager.unregisterListener(this);
         super.onDestroy();
     }
