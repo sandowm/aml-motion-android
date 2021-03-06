@@ -1,5 +1,6 @@
 package cc.sandow.HumanActivityRecorder;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -32,7 +33,8 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            onBackPressed();
+            Intent nextIntent = new Intent(SettingsActivity.this, HomeActivity.class);
+            startActivity(nextIntent);
             return true;
         }
         return super.onOptionsItemSelected(item);

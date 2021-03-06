@@ -7,8 +7,17 @@ public class HARApplication extends Application {
     public float[][] getSendeableArray() {
         return sendeableArray;
     }
+    private int collectorJobID;
 
     public void setSendeableArray(float[][] sendeableArray) {
         this.sendeableArray = sendeableArray;
+    }
+
+    public void setCollectorJobID(int collectorJobID) {
+        this.collectorJobID = collectorJobID;
+    }
+
+    public int getCollectorJobID() {
+        return collectorJobID;
     }
 }

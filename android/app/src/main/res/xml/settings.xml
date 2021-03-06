@@ -7,25 +7,22 @@
             app:title="Enable message notifications"/>
         <PreferenceCategory android:title="Subject">
 
-        <EditTextPreference
-            app:key="subject_name"
-            android:defaultValue="Default value"
-            android:key="subject_name"
-            android:selectAllOnFocus="true"
-            android:singleLine="true"
-            android:title="Name" />
-        <EditTextPreference
-            android:defaultValue="Default value"
-            android:key="subject_id"
-            android:selectAllOnFocus="true"
-            android:singleLine="true"
-            android:title="ID" />
-        <EditTextPreference
-            android:defaultValue="Default value"
-            android:key="subject_email"
-            android:selectAllOnFocus="true"
-            android:singleLine="true"
-            android:title="Email" />
+                <EditTextPreference
+                    android:key="subject_name"
+                    android:selectAllOnFocus="true"
+                    android:singleLine="true"
+                    android:title="Name"
+                    app:key="subject_name" />
+                <EditTextPreference
+                    android:key="subject_id"
+                    android:selectAllOnFocus="true"
+                    android:singleLine="true"
+                    android:title="ID" />
+                <EditTextPreference
+                    android:key="subject_email"
+                    android:selectAllOnFocus="true"
+                    android:singleLine="true"
+                    android:title="Email" />
         </PreferenceCategory>
 
         <PreferenceCategory android:title="Activity">
@@ -41,6 +38,12 @@
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:title="Activity ID" />
+                <EditTextPreference
+                    android:defaultValue="180"
+                    android:key="activityDuration"
+                    android:selectAllOnFocus="true"
+                    android:singleLine="true"
+                    android:title="Activity Duration" />
         </PreferenceCategory>
         <PreferenceCategory android:title="Advanced">
         <EditTextPreference

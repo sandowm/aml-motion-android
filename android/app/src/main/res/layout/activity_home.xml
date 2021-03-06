@@ -141,7 +141,6 @@
         android:id="@+id/txtServiceMessage"
         android:layout_width="349dp"
         android:layout_height="98dp"
-        android:text="Latest Server response"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtActivityID" />

@@ -21,6 +21,8 @@ public class HomeActivity extends AppCompatActivity {
 
     ImageButton btnToAccGyr;
     ImageButton btnSettings;
+    SharedPreferences sharedPreferences;
+
     @Override
     protected void onPostResume() {
         super.onPostResume();
@@ -32,8 +34,6 @@ public class HomeActivity extends AppCompatActivity {
         txtActivityID = (TextView) findViewById(R.id.txtActivityID);
         txtServiceMessage = (TextView) findViewById(R.id.txtServiceMessage);
 
-        SharedPreferences sharedPreferences =
-                PreferenceManager.getDefaultSharedPreferences(this);
         txtName.setText(sharedPreferences.getString("subject_name", ""));
         txtMail.setText(sharedPreferences.getString("subject_email", ""));
         txtSubject.setText(sharedPreferences.getString("subject_id", ""));
@@ -45,7 +45,8 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-
+        sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(this);
         //Define the Button to the next page and define what it does when clicked
         btnToAccGyr = (ImageButton)findViewById(R.id.btnPlay);
         btnToAccGyr.setOnClickListener(new View.OnClickListener() {
@@ -63,6 +64,10 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
+    private static int countLines(String str){
+        String[] lines = str.split("\r\n|\r|\n");
+        return  lines.length;
+    }
     @Override
     protected void onStart() {
         super.onStart();
@@ -77,14 +82,18 @@ public class HomeActivity extends AppCompatActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(ServiceEvent event) {
         // Put the server response on the UI
-        txtServiceMessage.setText(event.message);
+        if (countLines(txtServiceMessage.getText().toString()) >= 7) {
+            txtServiceMessage.setText(event.message);
+        } else {
+            txtServiceMessage.append(event.message);
+        }
+        txtServiceMessage.append("\n");
     }
     // Activate Collector-Service
     private void moveToMeasurement() {
         // Clear Status Text
-        txtServiceMessage.setText("Started Activity");
-        Intent intent = new Intent(getApplicationContext(), SensorService.class );
-        startService(intent);
+        txtServiceMessage.setText(String.format("Recording Scheduled for %ss\n",sharedPreferences.getString("activityDuration", "180")));
+        ((HARApplication) this.getApplication()).setCollectorJobID(Util.scheduleJob(this));
     }
     private void moveToSettings() {
         Intent intent =  new Intent(HomeActivity.this, SettingsActivity.class);

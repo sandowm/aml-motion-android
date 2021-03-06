@@ -19,28 +19,31 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 
-import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
 
+import static cc.sandow.HumanActivityRecorder.Util.sendToUI;
+
 public class SensorService  extends Service implements SensorEventListener {
-    private static final String DEBUG_TAG = "AccLoggerService";
+    private static final String LOG_TAG = "AccLoggerService";
 
     private SensorManager sensorManager = null;
     private Sensor sensorAcc, sensorGyr = null;
-    public int dataLine = 0;
+    public int accLine, gyrLine = 0;
     private static int MAXLINES=40000;
-    private float[][] accgyrData;
+    private float[][] accData, gyrData;
     private JSONObject postData;
     SharedPreferences sharedPreferences;
+    Integer versionCode = BuildConfig.VERSION_CODE;
+    Double maxSensorTimestamp = Double.MAX_VALUE;
 
     public SensorService() {
         // 40000 lines, with 6 measurements each
-        accgyrData = new float[MAXLINES][6];
-        dataLine = 0;
+        accData = new float[MAXLINES][4];
+        gyrData = new float[MAXLINES][4];
     }
 
     @Override
@@ -49,10 +52,10 @@ public class SensorService  extends Service implements SensorEventListener {
         sensorAcc = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sensorGyr = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         sensorManager.registerListener(this, sensorAcc,
-                SensorManager.SENSOR_DELAY_NORMAL);
+                SensorManager.SENSOR_DELAY_GAME);
         sensorManager.registerListener(this, sensorGyr,
-                SensorManager.SENSOR_DELAY_NORMAL);
-        Log.d(DEBUG_TAG,"SensorService StartCommand received");
+                SensorManager.SENSOR_DELAY_GAME);
+        Log.d(LOG_TAG,"SensorService StartCommand received");
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         return START_STICKY;
     }
@@ -69,37 +72,52 @@ public class SensorService  extends Service implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+        Double durationns = Float.parseFloat(sharedPreferences.getString("activityDuration","180")) * Math.pow(10,9);
+        if (maxSensorTimestamp == Double.MAX_VALUE) maxSensorTimestamp = event.timestamp + durationns;
+        Log.d(LOG_TAG,String.format("Event ts: %d, durationns: %f, max ts: %f",event.timestamp, durationns,maxSensorTimestamp));
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            // Every 0-Element is a timestamp in ms since start of this
+            accData[accLine][0] = (float) event.timestamp / 1000000;  // make it milliseconds
             // grab the values
             StringBuilder sb = new StringBuilder();
             for (float value : event.values)
                 sb.append(String.valueOf(value)).append(" | ");
 
-            Log.d(DEBUG_TAG, "received sensor valures are: " + sb.toString());
+            Log.d(LOG_TAG, "received sensor values are: " + sb.toString());
             for (int i = 0; i < event.values.length; i++) {
-                accgyrData[dataLine][i] = event.values[i];
+                accData[accLine][1+i] = event.values[i];
             }
-            dataLine++;
+            accLine++;
+            if (accLine % 50 == 0 ) sendToUI("M", String.format("Got %d Acc Events",accLine));
         } else {
+            // Every 0-Element is a timestamp in ms since start of this
+            accData[accLine][0] = (float) event.timestamp / 1000000;  // make it milliseconds
             for (int i = 0; i < event.values.length; i++) {
-                accgyrData[dataLine][2+i] = event.values[i];
+                gyrData[gyrLine][1+i] = event.values[i];
             }
         }
         StringBuilder sb = new StringBuilder();
-        for (float value : accgyrData[dataLine])
+        for (float value : gyrData[gyrLine])
             sb.append(String.valueOf(value)).append(" | ");
-        Log.i(DEBUG_TAG,"SensorService Sensor changed: " + sb.toString());
-        if (dataLine >= 100) {
+        Log.i(LOG_TAG,"SensorService Sensor changed: " + sb.toString());
+
+        // This ends the service
+        if (maxSensorTimestamp < event.timestamp) {
+            Log.i(LOG_TAG,String.format("Ending SensorService at maxTimestamp: %f, event.timestamp: %d",maxSensorTimestamp,event.timestamp));
             sendData();
             sensorManager.unregisterListener(this);
         }
     }
 
+
+
     public JSONObject prepareData() {
         JSONObject postData = new JSONObject();
         try {
             Gson gson = new Gson();
-            postData.put("data", new JSONArray(gson.toJson(Arrays.copyOfRange(accgyrData, 0, 99))));
+            if (accLine >0) postData.put("acc", new JSONArray(gson.toJson(Arrays.copyOfRange(accData, 0, accLine - 1))));
+            if (gyrLine >0) postData.put("gyr", new JSONArray(gson.toJson(Arrays.copyOfRange(gyrData, 0, gyrLine - 1))));
+            postData.put("appVersionCode", versionCode.toString());
             postData.put("subjectID", sharedPreferences.getString("subject_id", ""));
             postData.put("subjectName", sharedPreferences.getString("subject_name", ""));
             postData.put("subjectEMail", sharedPreferences.getString("subject_email", ""));
@@ -112,14 +130,15 @@ public class SensorService  extends Service implements SensorEventListener {
     }
 
     public void sendData() {
+        Util.unschedule(this, ((HARApplication) this.getApplication()).getCollectorJobID());
         RequestQueue queue = Volley.newRequestQueue(this);
         String url ="https://unibe.sandow.cc/my-university.php";
-        EventBus.getDefault().post(new ServiceEvent(getString(R.string.sendStatus_sending,url)));
+        sendToUI("M", getString(R.string.sendStatus_sending,url));
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, prepareData(), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                EventBus.getDefault().post(new ServiceEvent(getString(R.string.sendStatus_result, response.toString())));
+                sendToUI("M", getString(R.string.sendStatus_result, response.toString()));
                 stopSelf();
             }
         }, new Response.ErrorListener() {
@@ -135,7 +154,7 @@ public class SensorService  extends Service implements SensorEventListener {
 
     @Override
     public void onDestroy() {
-        Log.i(DEBUG_TAG,"Beeing Shutdown");
+        Log.i(LOG_TAG,"Beeing Shutdown");
         sensorManager.unregisterListener(this);
         super.onDestroy();
     }
