@@ -10,6 +10,8 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
+import com.nullwire.trace.ExceptionHandler;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -34,6 +36,11 @@ public class HomeActivity extends AppCompatActivity {
         txtActivityID = (TextView) findViewById(R.id.txtActivityID);
         txtServiceMessage = (TextView) findViewById(R.id.txtServiceMessage);
 
+        String msg = HARApplication.getLastMessage();
+        if (msg != "") { // If I was offline and something happened
+            txtServiceMessage.setText(msg);
+            HARApplication.setLastMessage("");
+        }
         txtName.setText(sharedPreferences.getString("subject_name", ""));
         txtMail.setText(sharedPreferences.getString("subject_email", ""));
         txtSubject.setText(sharedPreferences.getString("subject_id", ""));
@@ -44,9 +51,11 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ExceptionHandler.register(this, "https://unibe.sandow.cc/exception.php");
         setContentView(R.layout.activity_home);
         sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(this);
+        HARApplication.setAppContext(this);
         //Define the Button to the next page and define what it does when clicked
         btnToAccGyr = (ImageButton)findViewById(R.id.btnPlay);
         btnToAccGyr.setOnClickListener(new View.OnClickListener() {

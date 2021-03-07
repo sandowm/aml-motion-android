@@ -18,6 +18,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
+import com.nullwire.trace.ExceptionHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -49,6 +50,8 @@ public class SensorService  extends Service implements SensorEventListener {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        ExceptionHandler.register(this, "https://unibe.sandow.cc/exception.php");
+        Util.signalStartRecording(this);
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         sensorAcc = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sensorGyr = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
@@ -132,6 +135,7 @@ public class SensorService  extends Service implements SensorEventListener {
 
     public void sendData() {
         Util.unschedule(this, ((HARApplication) this.getApplication()).getCollectorJobID());
+        Util.signalStoppedRecording(this);
         RequestQueue queue = Volley.newRequestQueue(this);
         String url ="https://unibe.sandow.cc/my-university.php";
         sendToUI("M", getString(R.string.sendStatus_sending,url));
