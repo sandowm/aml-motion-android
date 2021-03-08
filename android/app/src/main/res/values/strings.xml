@@ -5,4 +5,7 @@
         to %1s.</string>
     <string name="sendStatus_result">Sent.
         Server Result: %1s.</string>
+    <string name="channel_name">ActiveSensoring</string>
+    <string name="channel_description">Active sensor use requires a high priority feedback to users</string>
+
 </resources>

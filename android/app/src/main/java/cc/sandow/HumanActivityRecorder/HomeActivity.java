@@ -10,8 +10,6 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
-import com.nullwire.trace.ExceptionHandler;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -51,7 +49,7 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ExceptionHandler.register(this, "https://unibe.sandow.cc/exception.php");
+        // ExceptionHandler.register(this, "https://unibe.sandow.cc/exception.php");
         setContentView(R.layout.activity_home);
         sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(this);
@@ -98,6 +96,7 @@ public class HomeActivity extends AppCompatActivity {
         }
         txtServiceMessage.append("\n");
     }
+
     // Activate Collector-Service
     private void moveToMeasurement() {
         // Clear Status Text

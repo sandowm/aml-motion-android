@@ -18,7 +18,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
-import com.nullwire.trace.ExceptionHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,7 +34,7 @@ public class SensorService  extends Service implements SensorEventListener {
     private Sensor sensorAcc, sensorGyr = null;
     public int accLine, gyrLine = 0;
     private static int MAXLINES=40000;
-    private static int expectedDelay = 50000;  // 50ms Sensor Delay
+    private static int expectedDelay = 20000;  // 20ms Sensor Delay == 50 Hz
     private float[][] accData, gyrData;
     private JSONObject postData;
     SharedPreferences sharedPreferences;
@@ -50,7 +49,8 @@ public class SensorService  extends Service implements SensorEventListener {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        ExceptionHandler.register(this, "https://unibe.sandow.cc/exception.php");
+        //ExceptionHandler.register(this, "https://unibe.sandow.cc/exception.php");
+        Util.createNotificationChannel();
         Util.signalStartRecording(this);
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         sensorAcc = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -92,13 +92,14 @@ public class SensorService  extends Service implements SensorEventListener {
                 accData[accLine][1+i] = event.values[i];
             }
             accLine++;
-            if (accLine % 50 == 0 ) sendToUI("M", String.format("Got %d Acc Events",accLine));
+            if (accLine % 50 == 0 ) sendToUI("M", String.format("Got %d Acc, %d Gyr Events",accLine,gyrLine));
         } else {
             // Every 0-Element is a timestamp in ms since start of this
             accData[accLine][0] = (float) event.timestamp / 1000000;  // make it milliseconds
             for (int i = 0; i < event.values.length; i++) {
                 gyrData[gyrLine][1+i] = event.values[i];
             }
+            gyrLine++;
         }
         StringBuilder sb = new StringBuilder();
         for (float value : gyrData[gyrLine])
@@ -137,7 +138,7 @@ public class SensorService  extends Service implements SensorEventListener {
         Util.unschedule(this, ((HARApplication) this.getApplication()).getCollectorJobID());
         Util.signalStoppedRecording(this);
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url ="https://unibe.sandow.cc/my-university.php";
+        String url = sharedPreferences.getString("url", "https://unibe.sandow.cc/my-university.php");
         sendToUI("M", getString(R.string.sendStatus_sending,url));
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, prepareData(), new Response.Listener<JSONObject>() {
