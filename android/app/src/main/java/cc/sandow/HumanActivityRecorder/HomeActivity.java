@@ -89,7 +89,7 @@ public class HomeActivity extends AppCompatActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(ServiceEvent event) {
         // Put the server response on the UI
-        if (countLines(txtServiceMessage.getText().toString()) >= 7) {
+        if (countLines(txtServiceMessage.getText().toString()) >= 5) {
             txtServiceMessage.setText(event.message);
         } else {
             txtServiceMessage.append(event.message);

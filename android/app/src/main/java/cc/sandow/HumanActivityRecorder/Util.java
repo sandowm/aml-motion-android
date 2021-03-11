@@ -6,9 +6,11 @@ import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
@@ -49,13 +51,15 @@ public class Util {
         jobScheduler.cancel(jobID);
     }
 
-    public static void signalStartRecording (Context context) {
+    public static void signalStatusRecording (Context context,Integer elapsedSeconds) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setContentTitle("HumanActivityRecorder")
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentText("Recording Started...")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setTimeoutAfter(60000); // 60000 == 1 minute
+                .setProgress(Integer.parseInt(sharedPreferences.getString("activityDuration", "0")),elapsedSeconds,false)
+                .setTimeoutAfter(600000); // 600000 == 10 minutes
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         notificationManager.notify(4, builder.build());
         vibrate(context,500,600);
