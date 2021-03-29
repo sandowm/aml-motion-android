@@ -9,29 +9,38 @@
 
     <TextView
         android:id="@+id/Disclaimer"
-        android:layout_width="236dp"
-        android:layout_height="202dp"
+        android:layout_width="322dp"
+        android:layout_height="163dp"
         android:text="Human Activity Recorder accesses waerable and phone sensors to monitor activity for scientific purposes."
+        android:textAlignment="center"
         android:textColor="@color/white"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.499" />
+        app:layout_constraintVertical_bias="0.711" />
 
     <TextView
         android:id="@+id/txtVersion"
         android:layout_width="311dp"
         android:layout_height="24dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
         android:text="Version"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/Disclaimer"
         app:layout_constraintStart_toStartOf="@+id/Disclaimer"
         app:layout_constraintTop_toBottomOf="@+id/Disclaimer" />
+
+    <ImageView
+        android:id="@+id/imageView6"
+        android:layout_width="480dp"
+        android:layout_height="388dp"
+        app:layout_constraintBottom_toTopOf="@+id/Disclaimer"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/capture_logo_3_square_white"
+        tools:layout_editor_absoluteX="-35dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
