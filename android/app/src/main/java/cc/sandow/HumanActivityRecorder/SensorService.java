@@ -86,7 +86,6 @@ public class SensorService  extends Service implements SensorEventListener {
     public void onSensorChanged(SensorEvent event) {
         // Happens only the first time, this is called
         if (maxSensorTimestamp == Double.MAX_VALUE) {
-
             maxSensorTimestamp = event.timestamp + durationns;
             startTimestamp = event.timestamp;
         }
@@ -110,7 +109,7 @@ public class SensorService  extends Service implements SensorEventListener {
             }
         } else {
             // Every 0-Element is a timestamp in ms since start of this
-            accData[accLine][0] = (float) event.timestamp / 1000000;  // make it milliseconds
+            gyrData[gyrLine][0] = (float) event.timestamp / 1000000;  // make it milliseconds
             for (int i = 0; i < event.values.length; i++) {
                 gyrData[gyrLine][1+i] = event.values[i];
             }

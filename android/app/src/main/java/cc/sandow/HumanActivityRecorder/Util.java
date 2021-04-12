@@ -62,7 +62,7 @@ public class Util {
                 .setTimeoutAfter(600000); // 600000 == 10 minutes
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         notificationManager.notify(4, builder.build());
-        vibrate(context,500,600);
+        //portvibrate(context,500,600);
     }
     public static void signalStoppedRecording (Context context) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)

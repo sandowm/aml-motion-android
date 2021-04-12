@@ -4,7 +4,7 @@ For the app to store the collected values you need to setup a server system, tha
 
 We chose to use a linux machine on gcp (Google Compute Platform). Google is so kind as to provide a lifetime free version of its gcp instances, that is sufficient to be used with this setup, see [https://cloud.google.com/free]. The following setup instructions have been tested in Feb 2021 on the gcp free tier. For the app to work properly with your server, you will need a name (DNS) and a certificate for that name. The following explanations assume you use [https://godaddy.com] as your registrar for your chosen domain name and [https://letsencrypt.org] as your certificate provider.
 
-Of course the functionality required of the server system is minimal, so it can be setup using all kinds of different solutions, including but not limited to windows, or even a smartphone, as long as you can run a webserver with php. The following shows one possible solution.
+Of course the functionality required of the server system is minimal, so it can be setup using all kinds of different solutions, including but not limited to a windows PC, or even a smartphone, as long as you can run a webserver with php on that infrastructure. The following is just one possible solution.
 
 ## Setup
 ### Create a project
