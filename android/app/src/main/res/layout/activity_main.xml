@@ -35,12 +35,13 @@
 
     <ImageView
         android:id="@+id/imageView6"
-        android:layout_width="480dp"
+        android:layout_width="0dp"
         android:layout_height="388dp"
         app:layout_constraintBottom_toTopOf="@+id/Disclaimer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0"
-        app:srcCompat="@drawable/capture_logo_3_square_white"
-        tools:layout_editor_absoluteX="-35dp" />
+        app:srcCompat="@drawable/capture_logo_3_square_white" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -16,3 +16,6 @@ local.properties
 /android/app/release/*.aab
 .vscode
 /android/.idea
+server/archive
+test
+androidTest

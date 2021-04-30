@@ -10,7 +10,7 @@ android {
         applicationId "cc.sandow.HumanActivityRecorder"
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 12
+        versionCode 13
         versionName "0.008"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
