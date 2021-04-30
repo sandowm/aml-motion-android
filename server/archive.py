@@ -1,4 +1,8 @@
-#!/usr/bin/python
+#!/usr/bin/python3
+
+# 
+# Convert uploaded json files to ML friedly directory structure and csv
+#
 
 import os
 import sys
@@ -6,19 +10,22 @@ import json
 import re
 import time
 from zipfile import ZipFile
+import shutil
+
 
 class HARArchiver():
     """Archive json files received by the HumanActivityRecorder App
     """
+
     def __init__(self):
-        self.srcDir="server"
-        self.dstDir=os.path.abspath("server/archive")
+        self.srcDir="/var/www/uploads"
+        self.dstDir=os.path.abspath("/var/www/unibe.sandow.cc/archive")
         self.filestozip={}
         self.deldir="/tmp"
     def archive(self):
         jsonre=re.compile("^[a-z]+\_([0-9]+)\_[0-9\:]+.+\.json$")
         currentsecs=time.mktime(time.localtime())
-        zipthreshold=86400*7
+        zipthreshold=1000 # 86400*7
         for f in os.listdir(self.srcDir):
             m = jsonre.match(f)
             if m:
@@ -36,21 +43,30 @@ class HARArchiver():
                 with open(csv,"w") as fd:
                     accI = gyrI = 0
                     mycsv=[]
-                    f=0.0
+                    x=0.0
                     fd.write(",attitude.roll,attitude.pitch,attitude.yaw,gravity.x,gravity.y,gravity.z,rotationRate.x,rotationRate.y,rotationRate.z,userAcceleration.x,userAcceleration.y,userAcceleration.z\n")
-                    for i in range(len(self.json["acc"])):
-                        gyr=self.json["gyr"][i]
-                        acc=self.json["acc"][i]
-                        # TODO Match the right datasets to each other. - For now we assume sensors are in sync (in reality they are not)
-                        try:
-                            mycsv.append("%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n" % (i,gyr[1],gyr[2],gyr[3],f,f,f,f,f,f,acc[1],acc[2],acc[3]))
-                        except:
-                            pass
+                    if "gyr" in self.json.keys() and "acc" in self.json.keys():
+                        for i in range(len(self.json["acc"])):
+                          acc=self.json["acc"][i]
+                          try:
+                            gyr=self.json["gyr"][i]
+                          except:
+                            gyr=0.0
+                          # TODO Match the right datasets to each other. - For now we assume sensors are in sync
+                          try:
+                              mycsv.append("%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n" % (i,gyr[1],gyr[2],gyr[3],x,x,x,x,x,x,acc[1],acc[2],acc[3]))
+                          except:
+                              pass
                     fd.writelines(mycsv)
+                # Just so we have all files as csv
+                shutil.copy(csv,os.path.join(self.dstDir,"csv",f))
 
     def getCsvName(self):
         ## Hint: wlk == 2
         activities = ["dws", "ups", "wlk", "jog", "std", "sit"]
+        if "activityID" not in self.json.keys(): self.json["activityID"] = "99"
+        if "subjectID" not in self.json.keys(): self.json["subjectID"] = "99"
+
         try:
             actStr = activities[int(self.json["activityID"])]
         except:
@@ -68,8 +84,8 @@ class HARArchiver():
     def compress(self):
         os.chdir(self.srcDir)
         for zipstr in self.filestozip.keys():
-            for f in self.filestozip[zipstr]:
-                with ZipFile(os.path.join(self.dstDir,zipstr+".zip"),"w") as z:
+            with ZipFile(os.path.join(self.dstDir,zipstr+".zip"),"w") as z:
+                for f in self.filestozip[zipstr]:
                     print("Adding %s to %s.zip" % (f,zipstr))
                     z.write(f)
                 os.rename(f,os.path.join(self.deldir,f))
@@ -78,3 +94,4 @@ if __name__ == "__main__":
     har = HARArchiver()
     har.archive()
     har.compress()
+
